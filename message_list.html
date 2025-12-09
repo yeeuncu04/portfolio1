@@ -35,11 +35,10 @@
   </table>
 
   <script>
-    // 🔗 Render에 올려둔 서버 주소
     const API_BASE = "https://portfolio1-2-whb2.onrender.com";
 
     async function loadMessages() {
-      const res = await fetch(`${API_BASE}/api/messages`);
+      const res = await fetch(API_BASE + "/api/messages");
       const data = await res.json();
 
       const table = document.querySelector("#msgTable");
@@ -47,12 +46,12 @@
       data.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${row.id}</td>
+          <td>${row._id}</td>
           <td>${row.name}</td>
           <td>${row.email}</td>
           <td>${row.message}</td>
-          <td>${row.created_at}</td>
-          <td><button onclick="deleteMessage(${row.id})">삭제</button></td>
+          <td>${row.createdAt ? row.createdAt : ""}</td>
+          <td><button onclick="deleteMessage('${row._id}')">삭제</button></td>
         `;
         table.appendChild(tr);
       });
@@ -61,7 +60,7 @@
     async function deleteMessage(id) {
       if (!confirm("정말 삭제할까요?")) return;
 
-      const res = await fetch(`${API_BASE}/api/messages/${id}`, {
+      const res = await fetch(API_BASE + `/api/messages/${id}`, {
         method: "DELETE",
       });
 

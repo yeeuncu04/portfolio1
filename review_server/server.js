@@ -6,7 +6,6 @@ const mysql = require("mysql2/promise");
 const mongoose = require("mongoose"); // ✅ MongoDB용
 
 const app = express();
-
 // Render 같은 클라우드에서는 process.env.PORT 를 꼭 써야 함!
 const PORT = process.env.PORT || 3000;
 
@@ -14,30 +13,25 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // ============================
-// 🔗 MongoDB 연결 (관광지 즐겨찾기용)
+// 🔗 MongoDB 연결 (관광지 즐겨찾기 + Contact 메시지용)
 // ============================
-
-// Render 에서는 .env / Environment Variables 에서 MONGO_URL 사용
-// 로컬에서는 MONGO_URL 이 없으면 127.0.0.1 로 접속
-const MONGO_URL =
+const mongoUrl =
   process.env.MONGO_URL || "mongodb://127.0.0.1:27017/portfolio_browser";
 
 mongoose
-  .connect(MONGO_URL)
+  .connect(mongoUrl)
   .then(() => {
     console.log("✅ MongoDB connected!");
-    console.log("   → URL:", MONGO_URL.includes("mongodb+srv://")
-      ? "Atlas 클러스터 (MONGO_URL)"
-      : "로컬 MongoDB (127.0.0.1)");
+    console.log("   → URL from:", process.env.MONGO_URL ? "env(MONGO_URL)" : mongoUrl);
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
   });
 
-// 즐겨찾기 스키마 & 모델
+// ----- 즐겨찾기 스키마 & 모델 -----
 const favoriteSchema = new mongoose.Schema({
   placeId: { type: String, required: true, unique: true }, // "shinhung-house"
-  placeName: { type: String, required: true }, // "신흥동 일본식 가옥"
+  placeName: { type: String, required: true },             // "신흥동 일본식 가옥"
   likes: { type: Number, default: 0 },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -49,19 +43,27 @@ favoriteSchema.pre("save", function (next) {
 
 const Favorite = mongoose.model("Favorite", favoriteSchema);
 
+// ----- Contact 메시지 스키마 & 모델 (MongoDB 사용) -----
+const contactMessageSchema = new mongoose.Schema({
+  name:    { type: String, required: true },
+  email:   { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const ContactMessage = mongoose.model("ContactMessage", contactMessageSchema);
+
 // ============================
-// 🔗 MySQL 환경설정 (후기 / Contact용)
+// 🔗 MySQL 환경설정 (후기 / review 용)
 // ============================
-// Render 같은 곳에서 쓰고 싶으면 Environment 에
-// MYSQL_HOST / MYSQL_USER / MYSQL_PASSWORD / MYSQL_DB 넣어주면 됨
 const dbConfig = {
-  host: process.env.MYSQL_HOST || "localhost",
-  user: process.env.MYSQL_USER || "root",
-  password: process.env.MYSQL_PASSWORD || "0412",
-  database: process.env.MYSQL_DB || "review_board",
+  host: "localhost",
+  user: "root",
+  password: "0412",
+  database: "review_board",
 };
 
-// MySQL 연결 함수
+// MySQL 연결 함수 (로컬에서만 사용)
 async function getConnection() {
   return await mysql.createConnection(dbConfig);
 }
@@ -135,9 +137,10 @@ app.delete("/reviews/:id", async (req, res) => {
 });
 
 // ============================
-// 📌 Contact 메시지 관련 API (MySQL)
+// 📌 Contact 메시지 관련 API (MongoDB 사용)
 // ============================
 
+// 메시지 저장
 app.post("/api/message", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -148,55 +151,37 @@ app.post("/api/message", async (req, res) => {
   }
 
   try {
-    const conn = await getConnection();
-    await conn.execute(
-      `
-      INSERT INTO contact_messages (name, email, message)
-      VALUES (?, ?, ?)
-    `,
-      [name, email, message]
-    );
-    conn.end();
-
-    res.json({ msg: "메시지가 저장되었습니다!" });
+    const doc = await ContactMessage.create({ name, email, message });
+    res.json({ msg: "메시지가 저장되었습니다!", data: doc });
   } catch (err) {
-    console.error(err);
+    console.error("POST /api/message error:", err);
     res.status(500).json({ msg: "서버 오류(메시지 저장 실패)" });
   }
 });
 
+// 메시지 목록 조회
 app.get("/api/messages", async (req, res) => {
   try {
-    const conn = await getConnection();
-    const [rows] = await conn.execute(
-      "SELECT * FROM contact_messages ORDER BY id DESC"
-    );
-    conn.end();
+    const rows = await ContactMessage.find().sort({ createdAt: -1 }).lean();
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    console.error("GET /api/messages error:", err);
     res.status(500).json({ msg: "서버 오류(메시지 불러오기 실패)" });
   }
 });
 
+// 메시지 삭제
 app.delete("/api/messages/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const conn = await getConnection();
-    const [result] = await conn.execute(
-      "DELETE FROM contact_messages WHERE id = ?",
-      [id]
-    );
-    conn.end();
-
-    if (result.affectedRows === 0) {
+    const deleted = await ContactMessage.findByIdAndDelete(id);
+    if (!deleted) {
       return res.status(404).json({ msg: "해당 메시지가 존재하지 않습니다." });
     }
-
     res.json({ msg: "메시지 삭제 완료!" });
   } catch (err) {
-    console.error(err);
+    console.error("DELETE /api/messages/:id error:", err);
     res.status(500).json({ msg: "메시지 삭제 실패 (서버 오류)" });
   }
 });
@@ -249,18 +234,8 @@ app.post("/favorites", async (req, res) => {
 });
 
 // ============================
-// 📌 헬스 체크용 간단 API
-// ============================
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    mongo: !!mongoose.connection.readyState,
-  });
-});
-
-// ============================
 // 📌 서버 실행
 // ============================
 app.listen(PORT, () => {
-  console.log(`🚀 Server running → PORT: ${PORT}`);
+  console.log(`Server running → http://localhost:${PORT}`);
 });
