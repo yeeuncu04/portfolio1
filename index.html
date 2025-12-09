@@ -65,7 +65,6 @@
 
             <!-- 뒷면 (증명사진) -->
             <div class="card-face card-back">
-              <!-- 사진 경로는 너 파일에 맞게 바꿔줘 -->
               <img src="images/profile.png" alt="프로필 사진" class="profile-photo" />
               <p class="profile-back-name">추 예 은 · Yeeun Chu</p>
               <p class="profile-back-sub">군산대학교 · 컴퓨터 관련 전공</p>
@@ -87,7 +86,7 @@
 
         <div class="project-list">
 
-          <!-- ✅ 군산 소개 웹 페이지 : 흰색 + 확대 + 하늘색 네온 glow + 링크 -->
+          <!-- 군산 소개 웹 페이지 -->
           <a href="main.html"
              class="project-main"
              target="_blank"
@@ -100,7 +99,6 @@
             </p>
           </a>
 
-          <!-- 나머지 프로젝트 카드 -->
           <article class="project">
             <h3>개인 포트폴리오 메인</h3>
             <p class="meta">2025 · Personal</p>
@@ -116,127 +114,133 @@
         </div>
       </section>
 
-      <!-- Contact -->
-<!-- ============================= -->
-<!-- 📬 CONTACT SECTION (index.html 내부) -->
-<!-- ============================= -->
-
-<section id="contact" style="padding: 60px 0; width:100%; display:flex; justify-content:center;">
-  <div style="
-    width: 100%;
-    max-width: 1400px;
-    padding: 40px 32px 60px;
-    border-radius: 32px;
-    background: linear-gradient(135deg, #f9fbff, #f5f2ff);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
-  ">
-    
-    <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 10px; color:#111827;">
-      Contact
-    </h1>
-
-    <p style="color:#6b7280; margin-bottom:16px;">
-      협업 제안이나 문의는 아래 메일로 연락해주세요.
-    </p>
-
-    <div style="margin-bottom: 26px;">
-      <span>📧</span>
-      <a href="mailto:yeeuncu04@naver.com" 
-      style="color:#2563eb; font-weight:600; text-decoration:none;">
-        yeeuncu04@naver.com
-      </a>
-    </div>
-
-    <!-- FORM -->
-    <form id="contactForm" style="display:flex; flex-direction:column; gap:14px;">
-
-      <input id="name" type="text" placeholder="이름 / Name" required
-        style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1;">
-
-      <input id="email" type="email" placeholder="이메일 / Email" required
-        style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1;">
-
-      <textarea id="msg" placeholder="메시지를 입력해주세요." required
-        style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1; min-height:180px;"></textarea>
-
-      <button id="sendBtn" type="submit"
-        style="
-          padding:12px 22px;
-          background: linear-gradient(135deg, #60a5fa, #4f46e5);
-          color:white; font-weight:600;
-          border:none; border-radius:999px;
-          box-shadow: 0 10px 25px rgba(59,130,246,0.4);
-          cursor:pointer;
+      <!-- ============================= -->
+      <!-- 📬 CONTACT SECTION -->
+      <!-- ============================= -->
+      <section id="contact" style="padding: 60px 0; width:100%; display:flex; justify-content:center;">
+        <div style="
+          width: 100%;
+          max-width: 1400px;
+          padding: 40px 32px 60px;
+          border-radius: 32px;
+          background: linear-gradient(135deg, #f9fbff, #f5f2ff);
+          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
         ">
-        메시지 보내기
-      </button>
+          
+          <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 10px; color:#111827;">
+            Contact
+          </h1>
 
-      <p id="statusText" style="font-size:14px; min-height:20px;"></p>
+          <p style="color:#6b7280; margin-bottom:16px;">
+            협업 제안이나 문의는 아래 메일로 연락해주세요.
+          </p>
 
-    </form>
+          <div style="margin-bottom: 26px;">
+            <span>📧</span>
+            <a href="mailto:yeeuncu04@naver.com" 
+              style="color:#2563eb; font-weight:600; text-decoration:none;">
+              yeeuncu04@naver.com
+            </a>
+          </div>
 
-  </div>
-</section>
+          <!-- FORM -->
+          <form id="contactForm" style="display:flex; flex-direction:column; gap:14px;">
 
-<script>
-const API_BASE = "http://localhost:3000";
+            <input id="name" type="text" placeholder="이름 / Name" required
+              style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1;">
 
-const form = document.getElementById("contactForm");
-const btn = document.getElementById("sendBtn");
-const statusText = document.getElementById("statusText");
+            <input id="email" type="email" placeholder="이메일 / Email" required
+              style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1;">
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+            <textarea id="msg" placeholder="메시지를 입력해주세요." required
+              style="padding:14px 16px; border-radius:14px; border:1px solid #cbd5e1; min-height:180px;"></textarea>
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const message = document.getElementById("msg").value.trim();
+            <button id="sendBtn" type="submit"
+              style="
+                padding:12px 22px;
+                background: linear-gradient(135deg, #60a5fa, #4f46e5);
+                color:white; font-weight:600;
+                border:none; border-radius:999px;
+                box-shadow: 0 10px 25px rgba(59,130,246,0.4);
+                cursor:pointer;
+              ">
+              메시지 보내기
+            </button>
 
-  if (!name || !email || !message) {
-    statusText.textContent = "모든 입력 칸을 채워주세요.";
-    statusText.style.color = "#dc2626";
-    return;
-  }
+            <p id="statusText" style="font-size:14px; min-height:20px;"></p>
 
-  btn.disabled = true;
-  btn.textContent = "전송 중...";
-  statusText.textContent = "";
+          </form>
 
-  try {
-    const res = await fetch(API_BASE + "/api/message", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ name, email, message }),
+        </div>
+      </section>
+
+      <footer>
+        <!-- 관리자용 메시지 확인 페이지 링크 -->
+        <a href="message_list.html" style="font-size: 12px; color:#9ca3af;">
+          관리자 메시지 확인
+        </a>
+      </footer>
+
+    </div>
+  </section>
+
+  <!-- ============================= -->
+  <!-- 📬 CONTACT FORM SCRIPT -->
+  <!-- ============================= -->
+  <script>
+    // Render에 배포한 Node.js 서버 주소
+    const API_BASE = "https://portfolio1-2-whb2.onrender.com";
+
+    const form = document.getElementById("contactForm");
+    const btn = document.getElementById("sendBtn");
+    const statusText = document.getElementById("statusText");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("msg").value.trim();
+
+      if (!name || !email || !message) {
+        statusText.textContent = "모든 입력 칸을 채워주세요.";
+        statusText.style.color = "#dc2626";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "전송 중...";
+      statusText.textContent = "";
+      statusText.style.color = "#6b7280";
+
+      try {
+        const res = await fetch(API_BASE + "/api/message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          statusText.textContent = "메시지가 성공적으로 저장되었습니다!";
+          statusText.style.color = "#059669";
+          form.reset();
+        } else {
+          statusText.textContent = data.msg || "전송 중 오류가 발생했습니다. (서버 응답 코드 " + res.status + ")";
+          statusText.style.color = "#dc2626";
+        }
+
+      } catch (err) {
+        console.error("Contact fetch error:", err);
+        statusText.textContent = "서버에 연결할 수 없습니다. (Node.js 서버 / Render 상태 확인)";
+        statusText.style.color = "#dc2626";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "메시지 보내기";
+      }
     });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      statusText.textContent = "메시지가 성공적으로 저장되었습니다!";
-      statusText.style.color = "#059669";
-      form.reset();
-    } else {
-      statusText.textContent = data.msg || "전송 중 오류가 발생했습니다.";
-      statusText.style.color = "#dc2626";
-    }
-
-  } catch (err) {
-    console.error(err);
-    statusText.textContent = "서버에 연결할 수 없습니다. (Node.js 실행 확인!)";
-    statusText.style.color = "#dc2626";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "메시지 보내기";
-  }
-});
-</script>
-<footer>
-  <!-- 일반 방문자에게는 잘 안보이게 작게 -->
-  <a href="message_list.html" style="font-size: 12px; color:#9ca3af;">
-    관리자 메시지 확인
-  </a>
-</footer>
-
+  </script>
 
 </body>
 </html>
