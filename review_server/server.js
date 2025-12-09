@@ -6,9 +6,9 @@ const mysql = require("mysql2/promise");
 const mongoose = require("mongoose"); // ✅ MongoDB용
 
 const app = express();
+
 // Render 같은 클라우드에서는 process.env.PORT 를 꼭 써야 함!
 const PORT = process.env.PORT || 3000;
-
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -16,20 +16,28 @@ app.use(bodyParser.json());
 // ============================
 // 🔗 MongoDB 연결 (관광지 즐겨찾기용)
 // ============================
-mongoose
-  .connect("mongodb://127.0.0.1:27017/portfolio_browser")
-  .then(() =>
-    console.log("✅ MongoDB connected (db: portfolio_browser)")
-  )
-  .catch((err) =>
-    console.error("❌ MongoDB connection error:", err)
-  );
 
+// Render 에서는 .env / Environment Variables 에서 MONGO_URL 사용
+// 로컬에서는 MONGO_URL 이 없으면 127.0.0.1 로 접속
+const MONGO_URL =
+  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/portfolio_browser";
+
+mongoose
+  .connect(MONGO_URL)
+  .then(() => {
+    console.log("✅ MongoDB connected!");
+    console.log("   → URL:", MONGO_URL.includes("mongodb+srv://")
+      ? "Atlas 클러스터 (MONGO_URL)"
+      : "로컬 MongoDB (127.0.0.1)");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
 
 // 즐겨찾기 스키마 & 모델
 const favoriteSchema = new mongoose.Schema({
   placeId: { type: String, required: true, unique: true }, // "shinhung-house"
-  placeName: { type: String, required: true },             // "신흥동 일본식 가옥"
+  placeName: { type: String, required: true }, // "신흥동 일본식 가옥"
   likes: { type: Number, default: 0 },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -44,11 +52,13 @@ const Favorite = mongoose.model("Favorite", favoriteSchema);
 // ============================
 // 🔗 MySQL 환경설정 (후기 / Contact용)
 // ============================
+// Render 같은 곳에서 쓰고 싶으면 Environment 에
+// MYSQL_HOST / MYSQL_USER / MYSQL_PASSWORD / MYSQL_DB 넣어주면 됨
 const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "0412",
-  database: "review_board",
+  host: process.env.MYSQL_HOST || "localhost",
+  user: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "0412",
+  database: process.env.MYSQL_DB || "review_board",
 };
 
 // MySQL 연결 함수
@@ -239,8 +249,18 @@ app.post("/favorites", async (req, res) => {
 });
 
 // ============================
+// 📌 헬스 체크용 간단 API
+// ============================
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    mongo: !!mongoose.connection.readyState,
+  });
+});
+
+// ============================
 // 📌 서버 실행
 // ============================
 app.listen(PORT, () => {
-  console.log(`Server running → http://localhost:${PORT}`);
+  console.log(`🚀 Server running → PORT: ${PORT}`);
 });
