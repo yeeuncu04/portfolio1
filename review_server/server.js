@@ -6,7 +6,9 @@ const mysql = require("mysql2/promise");
 const mongoose = require("mongoose"); // ✅ MongoDB용
 
 const app = express();
-const PORT = 3000;
+// Render 같은 클라우드에서는 process.env.PORT 를 꼭 써야 함!
+const PORT = process.env.PORT || 3000;
+
 
 app.use(cors());
 app.use(bodyParser.json());
