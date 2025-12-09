@@ -1,7 +1,23 @@
-// review.js
+// 맨 위
+const API_BASE = "https://portfolio1-2-whb2.onrender.com";
 
-// 백엔드 서버 주소
-const API_BASE = "http://localhost:3000";
+// 후기 목록
+fetch(`${API_BASE}/reviews`)
+  .then(res => res.json())
+  
+
+// 후기 작성
+fetch(`${API_BASE}/reviews`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ name, comment })
+});
+
+// 후기 삭제
+fetch(`${API_BASE}/reviews/${id}`, {
+  method: "DELETE"
+});
+
 
 const reviewListEl = document.getElementById("review-list");
 const form = document.getElementById("review-form");
